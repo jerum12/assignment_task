@@ -7,11 +7,8 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { FormErrors } from '@/types';
 
-interface FormErrors {
-  email?: string;
-  password?: string;
-}
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -44,7 +41,7 @@ export default function LoginPage() {
     if (validateForm()) {
       setApiError('')  
       
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -52,6 +49,11 @@ export default function LoginPage() {
       if (error) {
         setApiError(error.message);
       } else {
+        
+        if (data?.user) {
+          localStorage.setItem('user', JSON.stringify(data.user)); // Store user data
+        }
+
         router.push('/dashboard');
       }
     }
