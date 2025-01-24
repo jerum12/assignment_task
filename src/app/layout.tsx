@@ -7,10 +7,12 @@ import { useRouter } from 'next/navigation';
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 const inter = Inter({ subsets: ['latin'] });
+import { Session as SupabaseSession } from '@supabase/supabase-js';
+
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [session, setSession] = useState<any>(null);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [session, setSession] = useState<SupabaseSession | null>(null); // Use Session or null
   const router = useRouter();
 
   useEffect(() => {

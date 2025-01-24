@@ -5,7 +5,7 @@ import Header from "@/components/Header";
 import { useState } from "react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const handleToggleSidebar = () => {
         setIsSidebarOpen((prev) => !prev);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from "@/lib/utils";
@@ -12,7 +12,7 @@ interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
 }
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [active, setActive] = useState("Dashboard");
   const router = useRouter();
@@ -32,18 +32,18 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
     router.push('/auth/login');
   };
 
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { name: "Dashboard", icon: <FontAwesomeIcon icon={faHome} />, link: "/dashboard" },
     { name: "Task", icon: <FontAwesomeIcon icon={faClock} />, link: "/dashboard/tasks" },
     { name: "Logout", icon: <FontAwesomeIcon icon={faSignOutAlt} />, action: "logout" },
-  ];
+  ], []);
 
   useEffect(() => {
     const currentItem = menuItems.find((item) => item.link === pathname);
     if (currentItem) {
       setActive(currentItem.name);
     }
-  }, [pathname]);
+  }, [pathname,menuItems]);
 
   return (
     <>

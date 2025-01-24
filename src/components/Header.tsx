@@ -1,5 +1,5 @@
 
-import Image from 'next/image';
+
 import { FaBars } from 'react-icons/fa'; // Import the hamburger icon (FaBars) from React Icons
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 

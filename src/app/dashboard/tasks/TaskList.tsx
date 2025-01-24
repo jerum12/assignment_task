@@ -31,7 +31,7 @@ const TasksPage: React.FC = () => {
   };
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: FormErrors = {};
     console.log(editingTask)
     if (!editingTask?.title) newErrors.title = 'Title is required';
     if (!editingTask?.description) newErrors.description = 'Description is required';
