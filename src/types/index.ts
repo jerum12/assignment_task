@@ -14,3 +14,15 @@ export interface FormErrors {
     description?: string;
   }
   
+
+  export interface SidebarProps {
+    isOpen: boolean;
+    onToggle: () => void;
+  }
+
+
+  export interface User {
+    id: string; // or number, depending on your backend
+    user_id?: string; // optional fields
+    email?: string;
+  };

@@ -7,11 +7,9 @@ import { faHome, faClock, faSignOutAlt } from "@fortawesome/free-solid-svg-icons
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import ConfirmationModal from './Confirmation';
+import { SidebarProps } from '@/types';
 
-interface SidebarProps {
-  isOpen: boolean;
-  onToggle: () => void;
-}
+
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [active, setActive] = useState("Dashboard");

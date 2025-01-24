@@ -1,11 +1,22 @@
 
+'use client';
 
 import { FaBars } from 'react-icons/fa'; // Import the hamburger icon (FaBars) from React Icons
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { useEffect, useState } from 'react';
 
 const Header =  ({ onToggleSidebar }: { onToggleSidebar: () => void }) => {
-  const userData = localStorage.getItem('user');
-  const user = userData ? JSON.parse(userData).email : 'Guest';
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userData = localStorage.getItem('user');
+      const user = userData ? JSON.parse(userData).email : 'Guest';
+      setUser(user);
+    }
+  }, []);
+
   return (
     <header className=" flex items-center justify-between p-4  relative">
       {/* Hamburger Icon for mobile */}

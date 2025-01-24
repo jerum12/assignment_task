@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import AddTaskDialog from './AddTaskDialog';
-import { FormErrors, Task } from '@/types';
+import { FormErrors, Task, User } from '@/types';
 import toast from 'react-hot-toast';
 import { Loader } from 'react-feather';
 import { Switch } from '@/components/ui/switch';
@@ -11,11 +11,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import ConfirmationModal from '@/components/Confirmation';
 
-
 const TasksPage: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const userData = localStorage.getItem('user');
-  const user = userData ? JSON.parse(userData) : null;
+  const [user, setUser] = useState<User | null>(null); // Move user initialization to state
   const [loading, setLoading] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
 
@@ -25,6 +23,16 @@ const TasksPage: React.FC = () => {
   const [errors, setErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
+  // Fetch user data from localStorage on the client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    }
+  }, []);
+
   const handleDeleteTask = (taskId: string) => {
     setTaskToDelete(taskId);
     setShowDeleteModal(true);
@@ -32,19 +40,17 @@ const TasksPage: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
-    console.log(editingTask)
     if (!editingTask?.title) newErrors.title = 'Title is required';
     if (!editingTask?.description) newErrors.description = 'Description is required';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSaveTask = (task : Task) => {
+  const handleSaveTask = (task: Task) => {
     if (validateForm()) {
       setShowSaveModal(true);
       setEditingTask(task);
     }
-    
   };
 
   // Delete task
@@ -59,34 +65,30 @@ const TasksPage: React.FC = () => {
     }
 
     setShowDeleteModal(false);
-    setIsLoading(true);
+    setIsLoading(false);
   };
 
   // Edit task
   const editTask = async () => {
     setIsLoading(true);
 
-            const { error } = await supabase
-            .from('tasks')
-            .update({ title: editingTask?.title, description: editingTask?.description })
-            .eq('id', editingTask?.id);
-      
-          if (!error) {
-            setTasks((prevTasks) =>
-              prevTasks.map((t) => (t.id === editingTask?.id ? editingTask : t))
-            );
-            toast.success('Task updated successfully!');
-            setEditingTask(null); // Exit editing mode
-          } else {
-            toast.error('Failed to update task');
-          }
-          setShowSaveModal(false);
-      //handleDialogChange(false);
-    
-    setIsLoading(false);
-    
-  };
+    const { error } = await supabase
+      .from('tasks')
+      .update({ title: editingTask?.title, description: editingTask?.description })
+      .eq('id', editingTask?.id);
 
+    if (!error) {
+      setTasks((prevTasks) =>
+        prevTasks.map((t) => (t.id === editingTask?.id ? editingTask : t))
+      );
+      toast.success('Task updated successfully!');
+      setEditingTask(null); // Exit editing mode
+    } else {
+      toast.error('Failed to update task');
+    }
+    setShowSaveModal(false);
+    setIsLoading(false);
+  };
 
   // Fetch tasks from Supabase
   const fetchTasks = async () => {
@@ -128,7 +130,6 @@ const TasksPage: React.FC = () => {
 
   // Update task completion status
   const toggleTaskCompletion = async (task: Task) => {
-    console.log('jere')
     const { error } = await supabase
       .from('tasks')
       .update({ is_completed: !task.is_completed })
@@ -145,8 +146,6 @@ const TasksPage: React.FC = () => {
       toast.error('Failed to update task status');
     }
   };
-
-  
 
   return (
     <div className="p-6">
