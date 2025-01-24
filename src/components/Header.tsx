@@ -1,5 +1,7 @@
 
+import Image from 'next/image';
 import { FaBars } from 'react-icons/fa'; // Import the hamburger icon (FaBars) from React Icons
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 
 const Header =  ({ onToggleSidebar }: { onToggleSidebar: () => void }) => {
   const userData = localStorage.getItem('user');
@@ -16,12 +18,14 @@ const Header =  ({ onToggleSidebar }: { onToggleSidebar: () => void }) => {
 
       {/* Avatar and user name */}
       <div className="absolute top-4 right-4 flex items-center space-x-2">
-        <span className="text-gray-800">Hi! {user}</span> {/* Username on the left side */}
-        <img
-          src="https://randomuser.me/api/portraits/men/44.jpg"
-          alt="User Avatar"
-          className="w-8 h-8 rounded-full"
-        />
+        <span className="text-gray-800">{user}</span> 
+  
+        <div className="relative w-full h-full rounded-l-lg">
+        <Avatar>
+        <AvatarImage src="/assets/avatar.jpg" />
+        <AvatarFallback>CN</AvatarFallback>
+      </Avatar>
+              </div>
       </div>
     </header>
   );

@@ -26,13 +26,13 @@ const TasksPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const handleDeleteTask = (taskId: string) => {
-
     setTaskToDelete(taskId);
     setShowDeleteModal(true);
   };
 
   const validateForm = () => {
     const newErrors: any = {};
+    console.log(editingTask)
     if (!editingTask?.title) newErrors.title = 'Title is required';
     if (!editingTask?.description) newErrors.description = 'Description is required';
     setErrors(newErrors);
@@ -40,8 +40,11 @@ const TasksPage: React.FC = () => {
   };
 
   const handleSaveTask = (task : Task) => {
-    setShowSaveModal(true);
-    setEditingTask(task);
+    if (validateForm()) {
+      setShowSaveModal(true);
+      setEditingTask(task);
+    }
+    
   };
 
   // Delete task
@@ -63,7 +66,6 @@ const TasksPage: React.FC = () => {
   const editTask = async () => {
     setIsLoading(true);
 
-    if (validateForm()) {
             const { error } = await supabase
             .from('tasks')
             .update({ title: editingTask?.title, description: editingTask?.description })
@@ -80,7 +82,7 @@ const TasksPage: React.FC = () => {
           }
           setShowSaveModal(false);
       //handleDialogChange(false);
-    }
+    
     setIsLoading(false);
     
   };
@@ -187,14 +189,21 @@ const TasksPage: React.FC = () => {
                     {editingTask?.id === task.id ? (
                       <div className="flex flex-col space-y-2">
                         <Input
-                          className="p-2 w-full border rounded-lg"
+                          className={`p-2 border rounded-lg ${
+                            errors.title ? 'border-red-500' : 'border-gray-300'
+                          }`}
                           value={editingTask.title}
                           onChange={(e) =>
                             setEditingTask({ ...editingTask, title: e.target.value })
                           }
                         />
+                         {errors.title && (
+                          <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                        )}
                         <Textarea
-                          className="p-2 border rounded-lg"
+                          className={`p-2 border rounded-lg ${
+                            errors.description ? 'border-red-500' : 'border-gray-300'
+                          }`}
                           value={editingTask.description}
                           onChange={(e) =>
                             setEditingTask({
@@ -203,6 +212,9 @@ const TasksPage: React.FC = () => {
                             })
                           }
                         />
+                        {errors.description && (
+                          <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                        )}
                         <div className="flex space-x-2">
                           <button
                             onClick={() => handleSaveTask(editingTask)}

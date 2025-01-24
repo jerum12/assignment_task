@@ -8,14 +8,17 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { FormErrors } from '@/types';
+import { Loader } from 'react-feather';
+import toast from 'react-hot-toast';
+import Image from 'next/image';
 
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
-  const [apiError, setApiError] = useState('');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
@@ -36,26 +39,32 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e:  React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
     
     if (validateForm()) {
-      setApiError('')  
-      
+   
+      setErrors({});
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      setLoading(false);
 
       if (error) {
-        setApiError(error.message);
+        toast.error(error.message);
       } else {
-        
+        toast.success('User Successfully logged in!');
+
         if (data?.user) {
           localStorage.setItem('user', JSON.stringify(data.user)); // Store user data
         }
-
+        
         router.push('/dashboard');
       }
+    }{
+      setLoading(false);
     }
   };
 
@@ -81,21 +90,20 @@ export default function LoginPage() {
     <div className="bg-white rounded-lg shadow-lg flex max-w-4xl w-full">
       {/* Left Side: Image */}
       <div className="hidden md:block w-1/2">
-        <img
-          src={'/assets/login.jpg'}
+      <div className="relative w-full h-full rounded-l-lg">
+        <Image
+          src="/assets/login.jpg"
           alt="Login Image"
-          className="object-cover w-full h-full rounded-l-lg"
+          className="object-cover rounded-l-lg"
+          fill
         />
+      </div>
+
       </div>
 
       {/* Right Side: Form */}
       <div className="w-full md:w-1/2 p-8">
         <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
-        
-          {/* Global Error Message */}
-          {apiError && (
-            <p className="text-red-500 text-sm mb-4">{apiError}</p>
-          )}
 
         <form onSubmit={handleSubmit}>
           {/* Username Field */}
@@ -136,9 +144,16 @@ export default function LoginPage() {
           {/* Submit Button */}
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-custom-green text-white p-3 rounded hover:bg-green-700"
           >
-            Login
+           {loading ? (
+                    <>
+                        <Loader className="animate-spin mr-2" size={20} />
+                    </>
+                ) : (
+                  'Login'
+                )}
           </Button>
         </form>
       </div>

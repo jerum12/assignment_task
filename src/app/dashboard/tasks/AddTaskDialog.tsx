@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -17,7 +16,7 @@ const AddTaskDialog = ({ onAddTask }: { onAddTask: (title: string, description: 
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
   const validateForm = () => {
-    const newErrors: any = {};
+    const newErrors: FormErrors = {};
     if (!title) newErrors.title = 'Title is required';
     if (!description) newErrors.description = 'Description is required';
     setErrors(newErrors);
