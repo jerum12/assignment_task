@@ -1,11 +1,10 @@
 
 'use client';
 
-import { FaBars } from 'react-icons/fa'; // Import the hamburger icon (FaBars) from React Icons
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { useEffect, useState } from 'react';
 
-const Header =  ({ onToggleSidebar }: { onToggleSidebar: () => void }) => {
+const Header =  () => {
 
   const [user, setUser] = useState(null);
 
@@ -19,13 +18,13 @@ const Header =  ({ onToggleSidebar }: { onToggleSidebar: () => void }) => {
 
   return (
     <header className=" flex items-center justify-between p-4  relative">
-      {/* Hamburger Icon for mobile */}
+      {/* Hamburger Icon for mobile
       <button
         onClick={onToggleSidebar}
         className="md:hidden p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-white"
       >
         <FaBars className="w-6 h-6" />
-      </button>
+      </button> */}
 
       {/* Avatar and user name */}
       <div className="absolute top-4 right-4 flex items-center space-x-2">

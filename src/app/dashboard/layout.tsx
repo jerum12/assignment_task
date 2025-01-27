@@ -10,15 +10,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const handleToggleSidebar = () => {
         setIsSidebarOpen((prev) => !prev);
     };
-
     return (
         <div className="flex h-screen bg-gray-100">
             {/* Pass isSidebarOpen and handleToggleSidebar to Sidebar */}
             <Sidebar isOpen={isSidebarOpen} onToggle={handleToggleSidebar} />
             
-            <main className={`${isSidebarOpen ? 'ml-64' : 'ml-[100]'} flex-1`}>
-                <Header onToggleSidebar={handleToggleSidebar} />
-                <div className="flex-1 p-2">
+            <main className={`flex-1 transition-all duration-300 lg:ml-64 sm:ml-0'`}>
+                <Header />
+                <div className="flex-1 p-4">
                     {children}
                 </div>
             </main>

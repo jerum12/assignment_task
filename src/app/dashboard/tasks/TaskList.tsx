@@ -40,8 +40,8 @@ const TasksPage: React.FC = () => {
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
-    if (!editingTask?.title) newErrors.title = 'Title is required';
-    if (!editingTask?.description) newErrors.description = 'Description is required';
+    if (!editingTask?.title) newErrors.title = 'Title is required!';
+    if (!editingTask?.description) newErrors.description = 'Description is required!';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -61,7 +61,7 @@ const TasksPage: React.FC = () => {
       setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskToDelete));
       toast.success('Task deleted successfully!');
     } else {
-      toast.error('Error deleting task');
+      toast.error('Error deleting task!');
     }
 
     setShowDeleteModal(false);
@@ -84,7 +84,7 @@ const TasksPage: React.FC = () => {
       toast.success('Task updated successfully!');
       setEditingTask(null); // Exit editing mode
     } else {
-      toast.error('Failed to update task');
+      toast.error('Failed to update task!');
     }
     setShowSaveModal(false);
     setIsLoading(false);
@@ -97,7 +97,7 @@ const TasksPage: React.FC = () => {
     if (!error && data) {
       setTasks(data);
     } else {
-      toast.error(`Error fetching tasks: ${error?.message}`);
+      toast.error(`Error fetching tasks: ${error?.message}!`);
     }
     setLoading(false);
   };
@@ -109,7 +109,7 @@ const TasksPage: React.FC = () => {
   // Add a new task
   const handleAddTask = async (title: string, description: string) => {
     if (!user || !user.id) {
-      toast.error('User not found');
+      toast.error('User not found!');
       return false;
     }
 
@@ -123,7 +123,7 @@ const TasksPage: React.FC = () => {
       toast.success('Task added successfully!');
       return true;
     } else {
-      toast.error(error?.message || 'Error adding task');
+      toast.error(error?.message || 'Error adding task!');
       return false;
     }
   };
@@ -141,14 +141,14 @@ const TasksPage: React.FC = () => {
           t.id === task.id ? { ...t, is_completed: !task.is_completed } : t
         )
       );
-      toast.success(`Task marked as ${!task.is_completed ? 'completed' : 'incomplete'}`);
+      toast.success(`Task marked as ${!task.is_completed ? 'completed!' : 'incomplete!'}`);
     } else {
-      toast.error('Failed to update task status');
+      toast.error('Failed to update task status!');
     }
   };
 
   return (
-    <div className="p-6">
+    <div>
 
       <AddTaskDialog onAddTask={handleAddTask} />
       {loading ? (

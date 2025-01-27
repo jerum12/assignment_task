@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from "react";
-import { Dialog, DialogContent, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,7 +63,10 @@ const AddTaskDialog = ({ onAddTask }: { onAddTask: (title: string, description: 
         </div>
       </DialogTrigger>
 
-      <DialogContent>
+        <DialogContent  
+               onEscapeKeyDown={(e) => e.preventDefault()}
+            onInteractOutside={(e) => e.preventDefault()} >
+        <DialogDescription></DialogDescription>
         <DialogTitle>Add Task</DialogTitle>
         <div className="space-y-4">
           <Input
@@ -94,7 +97,7 @@ const AddTaskDialog = ({ onAddTask }: { onAddTask: (title: string, description: 
           )}
 
         <Button
-            className="px-4 py-2 bg-custom-green rounded flex items-center justify-center"
+              className="px-4 py-2 bg-custom-green hover:bg-green-900 rounded flex items-center justify-center"
             onClick={addTask}
             disabled={isLoading} // Disable button during loading
           >

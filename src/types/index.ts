@@ -12,6 +12,11 @@ export interface FormErrors {
     password?: string;
     title?: string;
     description?: string;
+    name?:string;
+    address?:string;
+    contact?:string;
+    age?:string;
+    gender?:string;
   }
   
 
@@ -25,4 +30,23 @@ export interface FormErrors {
     id: string; // or number, depending on your backend
     user_id?: string; // optional fields
     email?: string;
+  };
+
+  export type Employee = {
+    id?: string;
+    name?: string;
+    address?: string;
+    age?: string;
+    contact?: string;
+    gender?: string;
+  };
+
+  export interface EmployeeTableProps {
+    employees: Employee[]; // Specify the type of employees prop
+  }
+
+  export type ColumnProps = {
+    column: {
+      id: string; // or number, depending on the actual type of column.id
+    };
   };

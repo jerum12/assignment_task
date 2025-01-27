@@ -94,7 +94,7 @@ export default function LoginPage() {
         <Image
           src="/assets/login.jpg"
           alt="Login Image"
-          className="object-cover rounded-l-lg"
+          className="rounded-l-lg"
           fill
         />
       </div>

@@ -8,6 +8,7 @@ import './globals.css';
 import { Toaster } from 'react-hot-toast';
 const inter = Inter({ subsets: ['latin'] });
 import { Session as SupabaseSession } from '@supabase/supabase-js';
+import QueryProvider from '@/components/QueryProvider';
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -27,7 +28,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setSession(session);
       // Redirect to login if the user is logged out
       if (!session && event !== 'SIGNED_IN') {
-        console.log('here')
         router.push('/auth/login');
       }
     });
@@ -46,6 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
+      <QueryProvider>
       <Toaster
            toastOptions={{
             success: {
@@ -75,6 +76,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           }}
            position="top-right" reverseOrder={false} />
         <main>{children}</main>
+        </QueryProvider>
       </body>
     </html>
   );

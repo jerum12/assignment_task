@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHandshake, faCalendar, faNetworkWired, faTasks } from "@fortawesome/free-solid-svg-icons";
+import { faHandshake, faNetworkWired, faTasks, faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/lib/supabase";
 import { Loader } from "react-feather";
 import toast from "react-hot-toast";
@@ -9,12 +9,25 @@ const DashboardCards = () => {
   const [totalTasks, setTotalTasks] = useState(0); 
   const [completedTasks, setCompletedTasks] = useState(0); 
   const [notCompletedTasks, setNotCompletedTasks] = useState(0);
+  const [employeeList, setEmployeeList] = useState(0);
   const [loading, setLoading] = useState(false);
 
   // Fetch total tasks from Supabase
   const fetchTasks = async () => {
     setLoading(true);
     try {
+
+      // Fetch emplyees
+      const { count: totalEmp, error: totalEmpError } = await supabase
+        .from("employees")
+        .select("*", { count: "exact", head: true });
+
+      if (totalEmpError) {
+        toast.error(`Error fetching total employee: ${totalEmpError.message}`);
+      } else {
+        setEmployeeList(totalEmp || 0);
+      }
+
       // Fetch total tasks
       const { count: totalCount, error: totalError } = await supabase
         .from("tasks")
@@ -26,7 +39,7 @@ const DashboardCards = () => {
         setTotalTasks(totalCount || 0);
       }
 
-       // Fetch total tasks
+       // Fetch total completed tasks
        const { count: totalCountComp, error: totalCompError } = await supabase
        .from("tasks")
        .select("*", { count: "exact", head: true })
@@ -61,6 +74,12 @@ const DashboardCards = () => {
 
   const cards = [
     {
+      icon: faPeopleGroup,
+      title: "Total Employees",
+      value: employeeList,
+      bgColor: "bg-yellow-500",
+    },
+    {
       icon: faNetworkWired,
       title: "Total Task",
       value: totalTasks,
@@ -70,7 +89,7 @@ const DashboardCards = () => {
       icon: faTasks,
       title: "Total Task Completed",
       value: completedTasks, // Use the fetched total tasks
-      bgColor: "bg-pink-500",
+      bgColor: "bg-red-500",
     },
     {
       icon: faHandshake,
@@ -78,12 +97,7 @@ const DashboardCards = () => {
       value: notCompletedTasks,
       bgColor: "bg-green-500",
     },
-    {
-      icon: faCalendar,
-      title: "Upcoming Meetings",
-      value: "10",
-      bgColor: "bg-purple-500",
-    },
+   
   ];
 
   return (
