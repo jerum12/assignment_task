@@ -165,108 +165,113 @@ const EmployeeTable: React.FC = () => {
     const [isLoading, setIsLoading] = useState(false); // Loading state
     const [deleteEmployee, setDeleteEmployee] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(0); // Starts at page 0 (zero-indexed)
-    const [pageSize, setPageSize] = useState(10); // Default to 10 records per page
+    const [pageSize, setPageSize] = useState(5); // Default to 10 records per page
     const [totalCount, setTotalCount] = useState(0); // Total number of records
 
     
-    const fetchEmployees = async (pageIndex: number, pageSize: number) => {
-        setLoading(true);
-      
-        // Calculate the range for the current page
-        const start = pageIndex * pageSize;
-        const end = start + pageSize - 1;
-      
-        // Fetch employees with Supabase, including the total count
-        const { data, error, count } = await supabase
-          .from('employees')
-          .select('*', { count: 'exact' }) // Fetch data and total count
-          .order('name', { ascending: true })
-          .range(start, end); // Fetch only the data for the current page
-      
-        if (error) {
-          toast.error(`Error fetching employees: ${error.message}!`);
-        } else {
-          setEmployees(data || []); // Update the employee state
-          setTotalCount(count || 0); // Update the total count state
-        }
-      
-        setLoading(false);
-      };
-      
-  
     
-    const handleAddEmp = () => {
-        setType('add');
-        setEditingEmployee(null)
-        setIsDialogOpen(true)  // Open dialog when edit button is clicked
-      }
+  const fetchEmployees = async (pageIndex: number, pageSize: number, sortBy: { id: string; desc: boolean }[]) => {
+    if (loading) return;  
 
-    // Handle adding a new employee
-    const handleAdd = async (newEmployee: Employee) => {
-      const { data, error } = await supabase
+    setLoading(true);  
+
+    const start = pageIndex * pageSize;
+    const end = start + pageSize - 1;
+
+    let sortColumn = 'name'; 
+    let isDescending = false; 
+
+    if (sortBy.length > 0) {
+        sortColumn = sortBy[0].id; 
+        isDescending = sortBy[0].desc; 
+    }
+
+    try {
+      const { data, error, count } = await supabase
         .from('employees')
-        .insert(newEmployee)
-        .select()
-  
-      if (!error && data) {
-        setEmployees(prev => [...prev, newEmployee])
-        setTotalCount((prev) => prev + data.length); // Recompute total records
-        toast.success('Employee added successfully!');
-        return true
+        .select('*', { count: 'exact' })
+        .order(sortColumn, { ascending: !isDescending })
+        .range(start, end); 
+
+      if (error) {
+        toast.error(`Error fetching employees: ${error.message}!`);
       } else {
-        toast.error(error?.message || 'Error adding employee!')
-        return false
+        setEmployees(data || []); 
+        setTotalCount(count || 0); 
       }
+    } catch (error) {
+      toast.error(`Error fetching employees: ${error || 'Unknown error'}`);
+    } finally {
+      setLoading(false);  
     }
-  
-    // Handle editing an existing employee
-    const handleEdit = (employee: Employee) => {
-      setType('edit');
-      setEditingEmployee(employee)
-      setIsDialogOpen(true)  // Open dialog when edit button is clicked
-    }
+  };
 
   
-    // Handle updating the employee (update their data)
-    const handleUpdate = async (updatedEmployee: Employee) => {
+  const handleAddEmp = () => {
+    setType('add');
+    setEditingEmployee(null)
+    setIsDialogOpen(true)  
+  }
 
-      if (!updatedEmployee.id) {
-       toast.error('Error: Employee ID is missing or invalid!')
-        return false
-      }
-  
-      const { error } = await supabase
-      .from('employees')  // Specify the table and the Employee type
+  const handleAdd = async (newEmployee: Employee) => {
+    const { data, error } = await supabase
+      .from('employees')
+      .insert(newEmployee)
+      .select()
+
+    if (!error && data) {
+      setEmployees(prev => [...prev, newEmployee])
+      setTotalCount((prev) => prev + data.length); 
+      toast.success('Employee added successfully!');
+      return true
+    } else {
+      toast.error(error?.message || 'Error adding employee!')
+      return false
+    }
+  }
+
+  const handleEdit = (employee: Employee) => {
+    setType('edit');
+    setEditingEmployee(employee)
+    setIsDialogOpen(true)  
+  }
+
+  const handleUpdate = async (updatedEmployee: Employee) => {
+    if (!updatedEmployee.id) {
+      toast.error('Error: Employee ID is missing or invalid!')
+      return false
+    }
+
+    const { error } = await supabase
+      .from('employees') 
       .update(updatedEmployee)
       .eq('id', updatedEmployee.id)
       .single();
 
-      if (error) {
-        toast.error(`Error updating employee: ${error.message}!`)
-      } else {
-        setEmployees((prevEmp) =>
-            prevEmp.map((t) => (t.id === updatedEmployee?.id ? updatedEmployee : t))
-          );
-        setEditingEmployee(null)
-        toast.success('Employee updated successfully!')
-        return true
-      }
-      return false
+    if (error) {
+      toast.error(`Error updating employee: ${error.message}!`)
+    } else {
+      setEmployees((prevEmp) =>
+        prevEmp.map((t) => (t.id === updatedEmployee?.id ? updatedEmployee : t))
+      );
+      setEditingEmployee(null)
+      toast.success('Employee updated successfully!')
+      return true
     }
-  
-    
-    const handleDeleteEmp = (employeeId: string) => {
-        setDeleteEmployee(employeeId);
-        setShowDeleteModal(true);
-    };
+    return false
+  }
 
-      // Delete 
+  const handleDeleteEmp = (employeeId: string) => {
+    setDeleteEmployee(employeeId);
+    setShowDeleteModal(true);
+  };
+
   const handleDelete = async () => {
     setIsLoading(true);
     const { error } = await supabase.from('employees').delete().eq('id', deleteEmployee);
     if (!error) {
       setEmployees((prevEmp) => prevEmp.filter((e) => e.id !== deleteEmployee));
-      setTotalCount((prev) => prev - 1); // Decrement totalCount by 1
+      setTotalCount((prev) => prev - 1); 
       toast.success('Employee deleted successfully!');
     } else {
       toast.error('Error deleting employee!');
@@ -276,29 +281,34 @@ const EmployeeTable: React.FC = () => {
     setIsLoading(false);
   };
 
-  
-  useEffect(() => {
-    fetchEmployees(currentPage, pageSize); // Fetch data for the current page and page size
-  }, [currentPage, pageSize]);
-  
   const table = useReactTable({
-    data: employees, // Current page data
+    data: employees, 
     columns: columns(handleEdit, handleDeleteEmp),
-    pageCount: Math.ceil(totalCount / pageSize), // Calculate total pages
-    manualPagination: true, // Enable server-side pagination
+    pageCount: Math.ceil(totalCount / pageSize), 
+    manualPagination: true, 
     state: {
       pagination: {
-        pageIndex: currentPage, // Current page
-        pageSize, // Page size
+        pageIndex: currentPage, 
+        pageSize, 
       },
     },
     onPaginationChange: (updater) => {
       const newState = typeof updater === 'function' ? updater(table.getState().pagination) : updater;
-      setCurrentPage(newState.pageIndex); // Update current page
-      setPageSize(newState.pageSize); // Update page size
+      setCurrentPage(newState.pageIndex); 
+      setPageSize(newState.pageSize); 
     },
     getCoreRowModel: getCoreRowModel(),
   });
+
+  // useEffect to fetch employees when page or sorting changes
+  useEffect(() => {
+    if (currentPage >= 0 && pageSize > 0) {
+      fetchEmployees(currentPage, pageSize, table.getState().sorting);
+    }
+  }, [currentPage, pageSize, table.getState().sorting]);
+
+
+
   
     return (
       <div className="">
